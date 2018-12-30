@@ -1,4 +1,4 @@
-game_number = 1000000
+game_number = 1000000   #1,000,000
 batch_size = 10000 #batch_size = number of turns, not the games
 lr = 0.0003 #learning rate
 dr = 0.2 #dropout rate

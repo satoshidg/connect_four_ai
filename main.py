@@ -1,6 +1,7 @@
 from game.connect_four import Game
 from NN.model import Model
 import game_runner
+import numpy as np
 
 game = Game()
 

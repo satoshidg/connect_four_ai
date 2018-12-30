@@ -185,6 +185,8 @@ class Model:
         self.saver.save(self.sess, "models/" + name + ".ckpt")
         print("Done")
 
+
+
     def load(self, name): #This load already trained NN
         #with tf.Session() as sess:
         self.saver.restore(self.sess, "models/" + name + ".ckpt")
@@ -209,7 +211,8 @@ class Model:
         Q = self.sess.run(self.out, feed_dict ={self.input_state: s_feed}) #TODO: Call the output of NN
         print(Q[0])
         print("AI Made a decision: " + str(np.argmax(Q[0])))
-        return np.argmax(Q[0])
+        action = self.elim_actions(s, Q[0])
+        return np.argmax(action)
 
     def close(self):
         self.sess.close()

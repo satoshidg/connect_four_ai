@@ -15,16 +15,16 @@ class Model:
         conv1 = tf.layers.conv2d(
             inputs = self.input_state,
             filters = pm.filter_num,
-            kernel_size = [4, 4],
+            kernel_size = [3, 3],
             padding = 'same',
-            use_bias = True
+            use_bias = False
             #activation = tf.nn.relu
             )
 
-        conv1_out = tf.layers.Flatten()(conv1)
+        convs_out = tf.layers.Flatten()(conv1)
         #Dense layers
         dense1 = tf.layers.dense(
-            inputs = conv1_out,
+            inputs = convs_out,
             units = 128,
 #            activation = 'relu',
             use_bias = True
@@ -60,7 +60,7 @@ class Model:
             inputs = dense4,
             units = 7,
 #            activation = 'relu',
-            use_bias = True
+            use_bias = False
             )
 
         #Tensor to save the model
@@ -83,6 +83,12 @@ class Model:
     def train(self, name):
         games_count = 0
         oppo = Model()
+
+        try:
+            oppo = oppo.load(name)
+        except ValueError:
+            pass
+
         training_turn = 1
 
         #sess = tf.Session()
@@ -154,7 +160,7 @@ class Model:
             output = np.zeros([pm.batch_size, 7])
             loss = list()
 
-            if traing_turn == 1:
+            if training_turn == 1:
                 t_model = self
                 training_turn = 2
             else:
@@ -166,9 +172,6 @@ class Model:
                 action = batch[i][1] #Decision AI made
                 new_state = self.reshape(batch[i][2]) #State as the cosequence of action
                 reward = batch[i][3] #Reward AI got after the action
-
-                if state == new_state:
-                    reward = -50
 
                 #state[0] because state is a batch -> have to reduce one dimension
                 input[i] = state[0]
@@ -199,6 +202,19 @@ class Model:
         self.saver.restore(self.sess, "models/" + name + ".ckpt")
         print("Model Restored from Checkpoint")
 
+    def limit_actions(self, board, q_values):
+        eligible = list() #0 means the column is full, 1 means it is not full yet.
+        for i in range(len(board[0])):
+            done = False
+            for j in range(len(board)):
+                if not done and board[j][i] == 0:
+                    eligible.append(1)
+                    done = True
+            if not done:
+                eligible.append(0)
+        result = np.multiply(q_values, eligible)
+        return result
+
     def reshape(self, s):
         s_feed = list()
         temp = list()
@@ -216,9 +232,10 @@ class Model:
             #sess.run(self.init_OP)
         s_feed = self.reshape(s)
         Q = self.sess.run(self.out, feed_dict ={self.input_state: s_feed}) #TODO: Call the output of NN
-        print(Q[0])
-        print("AI Made a decision: " + str(np.argmax(Q[0])))
-        return np.argmax(Q[0])
+        q_values = self.limit_actions(s, Q[0])
+        print("AI Made a decision: " + str(np.argmax(q_values)) + ", based on these values below")
+        print(q_values)
+        return np.argmax(q_values)
 
     def close(self):
         self.sess.close()
