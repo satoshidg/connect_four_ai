@@ -21,7 +21,17 @@ class Model:
             #activation = tf.nn.relu
             )
 
-        convs_out = tf.layers.Flatten()(conv1)
+        conv2 = tf.layers.conv2d(
+            inputs = conv1,
+            filters = pm.filter_num,
+            kernel_size = [3, 3],
+            padding = 'same',
+            use_bias = False
+            #activation = tf.nn.relu
+            )
+
+        convs_out = tf.layers.Flatten()(conv2)
+
         #Dense layers
         dense1 = tf.layers.dense(
             inputs = convs_out,
