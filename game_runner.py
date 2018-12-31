@@ -2,6 +2,7 @@
 from NN.model import Model
 from game.connect_four import Game
 import tensorflow as tf
+import numpy as np
 
 def play_AI(cpu, name):
     sess = tf.Session()
@@ -9,7 +10,7 @@ def play_AI(cpu, name):
 
     game = Game()
 
-    player = 1
+    player = np.random.randint(1, 3)
     print("Starting game...")
     game.display()
     while(game.result() == 0):
