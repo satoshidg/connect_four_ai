@@ -4,9 +4,40 @@ from game.connect_four import Game
 import tensorflow as tf
 import numpy as np
 
+def play_2():
+    game = Game()
+
+    player = np.random.randint(1, 3)
+    print("Starting game...")
+    game.display()
+    while(game.result() == 0):
+        message = "Player" + str(player)
+        if player == 1:
+            message += "(X)"
+            message += "'s turn\nEnter column index: "
+            #column = input(message)
+        else:
+            message += "(O)"
+            message += "'s turn\nEnter column index: "
+            #column = input(message)
+        column = np.random.randint(1, 8)
+        print(str(column) + '\n')
+        game.mark(int(column), player)
+        if player == 1:
+            player = 2
+        else:
+            player = 1
+        game.display()
+    result = game.result()
+    if result == -1:
+        print("The board is full, game is Tie!")
+    elif result == 1:
+        print("Player 1 Won!")
+    else:
+        print("Player 2 Won!")
+
 def play_AI(cpu, name):
     sess = tf.Session()
-    cpu.load(name)
 
     game = Game()
 

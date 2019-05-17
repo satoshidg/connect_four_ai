@@ -29,7 +29,7 @@ class Game:
             print("The colum does not exist!")
             return
         if self.board[0][col] != 0:
-            print("The column is full!")
+            #print("The column is full!")
             return
         if self.board[5][col] == 0:
             self.board[5][col] = player
